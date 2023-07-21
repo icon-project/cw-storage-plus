@@ -52,7 +52,7 @@ where
 
     /// save will serialize the model and store, returns an error on serialization issues
     pub fn save(&self, store: &mut dyn Storage, data: &T) -> StdResult<()> {
-        self.save_raw(&self.storage_key, &to_vec(data)?);
+        self.save_raw(store, &to_vec(data)?);
         Ok(())
     }
 
