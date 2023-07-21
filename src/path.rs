@@ -52,7 +52,12 @@ where
 
     /// save will serialize the model and store, returns an error on serialization issues
     pub fn save(&self, store: &mut dyn Storage, data: &T) -> StdResult<()> {
-        store.set(&self.storage_key, &to_vec(data)?);
+        self.save_raw(&self.storage_key, &to_vec(data)?);
+        Ok(())
+    }
+
+    pub fn save_raw(&self, store: &mut dyn Storage, data: &[u8]) -> StdResult<()> {
+        store.set(&self.storage_key, data);
         Ok(())
     }
 
@@ -62,8 +67,12 @@ where
 
     /// load will return an error if no data is set at the given key, or on parse error
     pub fn load(&self, store: &dyn Storage) -> StdResult<T> {
-        let value = store.get(&self.storage_key);
+        let value = self.load_raw(store);
         must_deserialize(&value)
+    }
+
+    pub fn load_raw(&self, store: &dyn Storage) -> Option<Vec<u8>> {
+        store.get(&self.storage_key)
     }
 
     /// may_load will parse the data stored at the key if present, returns Ok(None) if no data there.
